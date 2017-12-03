@@ -63,10 +63,14 @@ Instructions:
     Refactor this code!
      */
     getJSON('../data/earth-like-results.json')
-    .then(function(response) {
-      response.results.forEach(function(url) {
-        getJSON(url).then(createPlanetThumb);
-      });
-    });
+        .then(function(response) {
+            addSearchHeader(response.query);
+            return Promise.all( response.results.map(getJSON) );
+        })
+        .catch(err=>console.log('error with initial json',err))
+        .then(thumbs=>{
+            thumbs.forEach(createPlanetThumb);
+        })
+        .catch(err=>console.log('error handling thumbnails',err));
   });
 })(document);
